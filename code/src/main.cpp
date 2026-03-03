@@ -2,8 +2,8 @@
 #include <Arduino.h>
 #include <driver/ledc.h>
 
-uint16_t fPWM = 5000;
-uint8_t dutyCycle = 1;
+uint16_t fPWM = 40000;
+uint8_t dutyCycle = 3;
 
 volatile bool newPulse = false;
 uint32_t pulseTime = 0;
@@ -15,6 +15,9 @@ uint32_t perioda = 0;
 uint32_t firstPulperioda = 0;
 bool prvniperioda = false;
 
+uint8_t pulse_count = 8;
+uint32_t delay_time = 0;
+
 void IRAM_ATTR handlePulse()
 {
 	newPulse = true;
@@ -24,23 +27,26 @@ void IRAM_ATTR handlePulse()
 void setup()
 {
 	// PWM setup
-	ledcSetup(0, fPWM, 8);	 // kanál 0, fPWM = 5000 Hz, rozlišení 8 bitů
+	ledcSetup(0, fPWM, 8);	 // kanál 0, fPWM, rozlišení 8 bitů
 	ledcAttachPin(10, 0);	 // pin 6 na kanál 0
 	ledcWrite(0, dutyCycle); // duty cycle 1/255
 
 	// Serial setup
-	Serial.begin(115200);
+	Serial.begin(460800);
 
 	// pin 0 jako vstup
 	pinMode(5, INPUT);
 
 	// interript na pinu 0
 	attachInterrupt(digitalPinToInterrupt(5), handlePulse, RISING);
+
+	delay_time = 1000000 / fPWM * pulse_count + 5; // čas mezi pulzy v mikrosekundách
+
 }
 
 void loop()
 {
-	if (newPulse == true && pulseCount >= 3 && block == false)
+	if (newPulse == true && pulseCount >= pulse_count && block == false)
 	{
 		pulperioda = millis() - starttime;
 
@@ -52,10 +58,10 @@ void loop()
 		else
 		{
 			perioda = firstPulperioda + pulperioda;
-			Serial.println(perioda);
-
 			firstPulperioda = 0;
 			prvniperioda = false;
+
+			Serial.println(perioda);
 		}
 
 		pulperioda = 0;
@@ -71,5 +77,5 @@ void loop()
 
 	pulseCount = 0;
 	newPulse = false;
-	delayMicroseconds(600);
-}
+	delayMicroseconds(delay_time);
+} 
