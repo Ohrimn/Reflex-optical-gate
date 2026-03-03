@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "schema")(type "KiCad")(uri "$(KIPRJMOD)/schema.pretty")(options "")(descr ""))
+)
