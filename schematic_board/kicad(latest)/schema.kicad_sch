@@ -6340,7 +6340,7 @@
 				)
 			)
 		)
-		(property "Footprint" "SamacSys_Parts:SOIC127P780X200-8N"
+		(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
 			(at 107.95 224.46 0)
 			(effects
 				(font
